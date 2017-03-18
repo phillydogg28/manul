@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"go/build"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -84,6 +85,13 @@ func addVendorSubmodule(importpath string) []error {
 			exec.Command("git", "submodule", "add", "-f", url, target),
 		)
 		if err == nil {
+			// Attempt to pull submodules for dependecy
+			currentPath, _ := os.Getwd()
+			err = os.Chdir(target)
+			_, err = execute(
+				exec.Command("git", "submodule", "update", "--init"),
+			)
+			err = os.Chdir(currentPath)
 			return nil
 		}
 
